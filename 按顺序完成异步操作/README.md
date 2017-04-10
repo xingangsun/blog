@@ -27,7 +27,7 @@ function fetch (api, ms, err = false) {
 function loadData () {
   const promises = [fetch('API1', 3000), fetch('API2', 2000, true), fetch('API3', 5000)]
   promises.reduce((chain, promise, index) => {
-    return chain.then(() => promise).then(data => console.log(data)).catch(data => console.error(data))
+    return chain.then(() => promise).then(data => console.log(data)).catch(err => console.error(err))
   }, Promise.resolve())
 }
 
@@ -38,8 +38,8 @@ async function loadData () {
     try {
       const data = await promise
       console.log(data)
-    } catch (data) {
-      console.error(data)
+    } catch (err) {
+      console.error(err)
     }
   }
 }
@@ -53,8 +53,8 @@ function* load1 () {
   const promise = yield fetch('API1', 3000)
   promise.then(function (data) {
     console.log(data)
-  }).catch(function (data) {
-    console.error(data)
+  }).catch(function (err) {
+    console.error(err)
   })
 }
 
@@ -62,8 +62,8 @@ function* load2 () {
   const promise = yield fetch('API2', 2000, true)
   promise.then(function (data) {
     console.log(data)
-  }).catch(function (data) {
-    console.error(data)
+  }).catch(function (err) {
+    console.error(err)
   })
 }
 
@@ -71,8 +71,8 @@ function* load3 () {
   const promise = yield fetch('API3', 5000)
   promise.then(function (data) {
     console.log(data)
-  }).catch(function (data) {
-    console.error(data)
+  }).catch(function (err) {
+    console.error(err)
   })
 }
 
@@ -134,7 +134,7 @@ resolve-API3-5000
 
 ```javascript
 /**
- * 按顺序加载异步请求数据
+ * 按顺序加载异步请求数据(自动执行器)
  * @param {...GeneratorFunction()} args GeneratorFunction函数执行返回值
  * @return {Promise} 返回一个Promise对象p。只要请求出错，就执行p的catch回调，否则执行then回调，回调参数为各个请求结果组成的数组
  */
@@ -169,10 +169,10 @@ function fetch (api, ms, err = false) {
 
 // 请求接口1
 function* load1 () {
-  (yield fetch('API1', 3000)).then(function (data) {
-    console.log(data)
-  }).catch(function (data) {
-    console.error(data)
+  (yield fetch('API1', 3000)).then(function (res) {
+    console.log(res)
+  }).catch(function (err) {
+    console.error(err)
   })
 }
 
@@ -180,8 +180,8 @@ function* load1 () {
 function* load2 () {
   (yield fetch('API2', 2000, true)).then(function (data) {
     console.log(data)
-  }).catch(function (data) {
-    console.error(data)
+  }).catch(function (err) {
+    console.error(err)
   })
 }
 
@@ -189,16 +189,16 @@ function* load2 () {
 function* load3 () {
   (yield fetch('API3', 5000)).then(function (data) {
     console.log(data)
-  }).catch(function (data) {
-    console.error(data)
+  }).catch(function (err) {
+    console.error(err)
   })
 }
 
 // 按顺序加载异步请求
-loadDataInOrder(load1(), load2(), load3()).then(function (result) {
-  console.log('ok', result)
-}).catch(function (result) {
-  console.error('error', result)
+loadDataInOrder(load1(), load2(), load3()).then(function ([data1, data2, data3]) {
+  console.log('ok', data1, data2, data3)
+}).catch(function ([err1, err2, err3]) {
+  console.error('error', err1, err2, err3)
 })
 ```
 
